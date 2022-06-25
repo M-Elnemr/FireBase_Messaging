@@ -2,11 +2,9 @@ package com.elnemr.firebasemessaging
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.elnemr.firebasemessaging.databinding.ActivityMainBinding
 import com.google.firebase.messaging.FirebaseMessaging
-import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,16 +20,14 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        FireBaseService.prefrences = getSharedPreferences("prefrences", MODE_PRIVATE)
-        FirebaseMessaging.getInstance().token.addOnSuccessListener {
-            Log.d(TAG, "onCreate: $it")
-            FireBaseService.token = it
-        }
+        initSharedPreferences()
+        getToken()
+        subscribeToTopic(TOPIC)
+        initClicks()
+    }
 
-        FirebaseMessaging.getInstance().subscribeToTopic(TOPIC)
-
+    private fun initClicks() {
         binding.btnSend.setOnClickListener {
-            Log.d(TAG, "onCreate: here")
             val notificationData = NotificationData(
                 binding.etTitle.text.toString(),
                 binding.etMessage.text.toString()
@@ -39,13 +35,25 @@ class MainActivity : AppCompatActivity() {
             PushNotification(
                 notificationData,
                 TOPIC
-            // or send the notification to a firebase token instead of the TOPIC
+                // or send the notification to a firebase token instead of the TOPIC
             ).also {
                 sendNotificationRequest(it)
             }
-
         }
+    }
 
+    private fun subscribeToTopic(topic: String) {
+        FirebaseMessaging.getInstance().subscribeToTopic(topic)
+    }
+
+    private fun initSharedPreferences() {
+        FireBaseService.prefrences = getSharedPreferences("prefrences", MODE_PRIVATE)
+    }
+
+    private fun getToken() {
+        FirebaseMessaging.getInstance().token.addOnSuccessListener {
+            FireBaseService.token = it
+        }
     }
 
     private fun sendNotificationRequest(notification: PushNotification) =

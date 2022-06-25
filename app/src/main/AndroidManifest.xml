@@ -3,7 +3,6 @@
     package="com.elnemr.firebasemessaging">
 
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="com.google.android.c2dm.intent.RECEIVE"/>
 
     <application
         android:allowBackup="true"
@@ -23,11 +22,9 @@
         </activity>
 
         <service android:name=".FireBaseService"
-            android:permission="com.google.android.c2dm.intent.SEND"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
             </intent-filter>
         </service>
     </application>
